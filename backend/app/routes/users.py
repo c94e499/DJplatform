@@ -9,7 +9,7 @@ users_bp = Blueprint('users', __name__)
 
 @users_bp.route('/', methods=['GET'])
 def get_users():
-    """Get all users with pagination."""
+    """Get all users with pagination (public info only)."""
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
 
@@ -19,7 +19,7 @@ def get_users():
     users = User.query.paginate(page=page, per_page=per_page, error_out=False)
 
     return jsonify({
-        'users': [user.to_dict() for user in users.items],
+        'users': [user.to_public_dict() for user in users.items],
         'total': users.total,
         'pages': users.pages,
         'current_page': users.page
@@ -28,13 +28,13 @@ def get_users():
 
 @users_bp.route('/<int:user_id>', methods=['GET'])
 def get_user(user_id):
-    """Get a specific user by ID."""
+    """Get a specific user by ID (public info only)."""
     user = User.query.get(user_id)
 
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    return jsonify({'user': user.to_dict()}), 200
+    return jsonify({'user': user.to_public_dict()}), 200
 
 
 @users_bp.route('/<int:user_id>', methods=['PUT'])

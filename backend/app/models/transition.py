@@ -22,7 +22,7 @@ class Transition(db.Model):
     # Relationships
     from_track = db.relationship('Track', foreign_keys=[from_track_id])
     to_track = db.relationship('Track', foreign_keys=[to_track_id])
-    set_version = db.relationship('SetVersion', backref='transitions')
+    set_version = db.relationship('SetVersion', back_populates='transitions')
 
     def to_dict(self):
         """Convert transition to dictionary representation."""

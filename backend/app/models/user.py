@@ -30,18 +30,24 @@ class User(db.Model):
         """Check if the provided password matches the hash."""
         return check_password_hash(self.password_hash, password)
 
-    def to_dict(self):
+    def to_dict(self, include_email=True):
         """Convert user to dictionary representation."""
-        return {
+        result = {
             'id': self.id,
             'username': self.username,
-            'email': self.email,
             'display_name': self.display_name,
             'bio': self.bio,
             'avatar_url': self.avatar_url,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
+        if include_email:
+            result['email'] = self.email
+        return result
+
+    def to_public_dict(self):
+        """Convert user to public dictionary (no sensitive info)."""
+        return self.to_dict(include_email=False)
 
     def __repr__(self):
         return f'<User {self.username}>'

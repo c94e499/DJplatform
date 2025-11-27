@@ -14,6 +14,9 @@ class SetVersion(db.Model):
     set_id = db.Column(db.Integer, db.ForeignKey('sets.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Relationships
+    transitions = db.relationship('Transition', back_populates='set_version')
+
     def to_dict(self):
         """Convert set version to dictionary representation."""
         return {
