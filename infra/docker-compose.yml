@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ../backend
+    container_name: mixcraft-backend
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    depends_on:
+      - db
+    networks:
+      - mixcraft-network
+
+  frontend:
+    build: ../frontend
+    container_name: mixcraft-frontend
+    depends_on:
+      - backend
+    networks:
+      - mixcraft-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: mixcraft-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - mixcraft-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: mixcraft-db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mixcraft-network
+
+networks:
+  mixcraft-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
